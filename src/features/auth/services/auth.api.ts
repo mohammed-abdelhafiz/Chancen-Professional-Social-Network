@@ -21,3 +21,8 @@ export const getMe = async () => {
   const response = await api.get("/users/me");
   return response.data;
 };
+
+export const oauthLogin = async (provider: string) => {
+  const response = await api.get(`/auth/${provider}`);
+  return response.data;
+};

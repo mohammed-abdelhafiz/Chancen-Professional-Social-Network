@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
 import Link from "next/link";
-import Image from "next/image";
 import {
   registerFormSchema,
   RegisterFormValues,
@@ -23,6 +21,7 @@ import {
 import { FormController } from "@/components/Controller";
 import { useRegister } from "../hooks/useRegister";
 import { Loader2 } from "lucide-react";
+import { SocialLoginButtons } from "./SocialLoginButtons";
 
 export const RegisterForm = () => {
   const form = useForm<RegisterFormValues>({
@@ -51,15 +50,7 @@ export const RegisterForm = () => {
       </CardHeader>
       <CardContent>
         <form id="register-form" onSubmit={form.handleSubmit(onSubmit)}>
-          <Button className="w-full" variant="outline">
-            <Image
-              src={"/google-icon.svg"}
-              width={16}
-              height={16}
-              alt="Continue with Google"
-            />
-            Continue with Google
-          </Button>
+          <SocialLoginButtons />
           <div className="my-4 flex items-center">
             <div className="h-px flex-1 bg-border"></div>
             <div className="text-muted-foreground mx-2 text-xs">OR</div>

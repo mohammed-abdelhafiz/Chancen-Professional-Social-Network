@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { login } from "../services/api";
+import { login } from "../services/auth.api";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
