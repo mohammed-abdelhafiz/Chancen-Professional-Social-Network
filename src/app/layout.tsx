@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, JetBrains_Mono, Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import TanstackQueryProvider from "@/components/providers/TanstackQueryProvider";
+import { InitAuthProvider } from "@/components/providers/InitAuthProvider";
 
-const interHeading = Inter({subsets:['latin'],variable:'--font-heading'});
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const interHeading = Inter({ subsets: ["latin"], variable: "--font-heading" });
 
 export const metadata: Metadata = {
   title: "Chancen",
@@ -29,14 +23,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={cn(
         "h-full",
         "antialiased",
-        geistSans.variable,
-        geistMono.variable,
+        outfit.variable,
         interHeading.variable,
       )}
     >
       <body className="min-h-full flex flex-col">
-        <main>{children}</main>
-        <Toaster richColors/>
+        <TanstackQueryProvider>
+          <InitAuthProvider>
+            <main>{children}</main>
+          </InitAuthProvider>
+          <Toaster richColors />
+        </TanstackQueryProvider>
       </body>
     </html>
   );

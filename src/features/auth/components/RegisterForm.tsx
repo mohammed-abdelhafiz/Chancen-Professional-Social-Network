@@ -21,6 +21,8 @@ import {
   RegisterFormValues,
 } from "../schema/register.schema";
 import { FormController } from "@/components/Controller";
+import { useRegister } from "../hooks/useRegister";
+import { Loader2 } from "lucide-react";
 
 export const RegisterForm = () => {
   const form = useForm<RegisterFormValues>({
@@ -33,9 +35,10 @@ export const RegisterForm = () => {
     },
   });
 
+  const registerMutation = useRegister();
+
   function onSubmit(data: RegisterFormValues) {
-    toast("You submitted the following values:");
-    console.log(data);
+    registerMutation.mutate(data);
   }
 
   return (
@@ -96,8 +99,19 @@ export const RegisterForm = () => {
       </CardContent>
       <CardFooter>
         <Field orientation="vertical">
-          <Button type="submit" form="register-form">
-            Submit
+          <Button
+            type="submit"
+            form="register-form"
+            disabled={registerMutation.isPending}
+          >
+            {registerMutation.isPending ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              "Create account"
+            )}
           </Button>
           <p className="text-muted-foreground text-sm">
             Already have an account?{" "}

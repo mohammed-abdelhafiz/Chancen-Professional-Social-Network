@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +17,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { loginFormSchema, LoginFormValues } from "../schema/login.schema";
 import { FormController } from "@/components/Controller";
+import { useLogin } from "../hooks/useLogin";
+import { Loader2 } from "lucide-react";
 
 export const LoginForm = () => {
   const form = useForm<LoginFormValues>({
@@ -28,9 +29,10 @@ export const LoginForm = () => {
     },
   });
 
+  const loginMutation = useLogin();
+
   function onSubmit(data: LoginFormValues) {
-    toast("You submitted the following values:");
-    console.log(data);
+    loginMutation.mutate(data);
   }
 
   return (
@@ -77,8 +79,19 @@ export const LoginForm = () => {
       </CardContent>
       <CardFooter>
         <Field orientation="vertical">
-          <Button type="submit" form="login-form">
-            Submit
+          <Button
+            type="submit"
+            form="login-form"
+            disabled={loginMutation.isPending}
+          >
+            {loginMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Please wait
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
           <p className="text-muted-foreground text-sm">
             Don&apos;t have an account?{" "}
