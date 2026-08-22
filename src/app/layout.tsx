@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import TanstackQueryProvider from "@/components/providers/TanstackQueryProvider";
 import { InitAuthProvider } from "@/components/providers/InitAuthProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
+const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
 
-const interHeading = Inter({ subsets: ["latin"], variable: "--font-heading" });
+const interHeading = Inter({subsets:['latin'],variable:'--font-heading'});
 
 export const metadata: Metadata = {
   title: "Chancen",
@@ -20,20 +21,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn(
         "h-full",
         "antialiased",
+        "font-sans",
         outfit.variable,
         interHeading.variable,
       )}
     >
       <body className="min-h-full flex flex-col">
-        <TanstackQueryProvider>
-          <InitAuthProvider>
-            <main>{children}</main>
-          </InitAuthProvider>
-          <Toaster richColors />
-        </TanstackQueryProvider>
+        <ThemeProvider>
+          <TanstackQueryProvider>
+            <InitAuthProvider>
+              <main>{children}</main>
+            </InitAuthProvider>
+            <Toaster richColors />
+          </TanstackQueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

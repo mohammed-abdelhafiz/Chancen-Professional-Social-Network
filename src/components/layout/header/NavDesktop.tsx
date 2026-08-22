@@ -1,3 +1,6 @@
+"use client";
+
+import { cn } from "@/lib/utils";
 import {
   Bell,
   BriefcaseBusiness,
@@ -6,6 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { href: "/feed", label: "Home", Icon: Home },
@@ -15,13 +19,20 @@ const navLinks = [
   { href: "/notifications", label: "Notifications", Icon: Bell },
 ];
 
-export const Nav = () => {
+export const NavDesktop = () => {
+  const pathname = usePathname();
   return (
-    <nav>
-      <ul className="flex gap-6">
+    <nav className="">
+      <ul className="gap-8 hidden md:flex">
         {navLinks.map((link) => (
           <li key={link.href}>
-            <Link href={link.href} className="flex flex-col items-center">
+            <Link
+              href={link.href}
+              className={cn(
+                "flex flex-col items-center hover:text-primary transition-colors",
+                pathname.startsWith(link.href) && "text-primary font-semibold",
+              )}
+            >
               <link.Icon className="size-5" />
               <span className="text-sm">{link.label}</span>
             </Link>

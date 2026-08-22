@@ -1,3 +1,3 @@
 export const Logo = () => {
-  return <div className="text-2xl font-medium text-primary">Chancen</div>;
+  return <div className="text-2xl font-bold text-primary">Chancen</div>;
 };
