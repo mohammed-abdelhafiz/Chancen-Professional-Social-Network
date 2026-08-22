@@ -15,7 +15,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import Link from "next/link";
 import { loginFormSchema, LoginFormValues } from "../schema/login.schema";
-import { FormController } from "@/components/Controller";
+import { FormController } from "@/components/shared/Controller";
 import { useLogin } from "../hooks/useLogin";
 import { Loader2 } from "lucide-react";
 import { SocialLoginButtons } from "./SocialLoginButtons";

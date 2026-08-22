@@ -10,32 +10,32 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// api.interceptors.response.use(
-//   (response) => response,
+api.interceptors.response.use(
+  (response) => response,
 
-//   async (error: AxiosError) => {
-//     const originalRequest = error.config as CustomAxiosRequestConfig;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as CustomAxiosRequestConfig;
 
-//     if (
-//       error.response?.status === 401 &&
-//       !originalRequest._retry &&
-//       !originalRequest._skipAuthRefresh
-//     ) {
-//       originalRequest._retry = true;
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest._skipAuthRefresh
+    ) {
+      originalRequest._retry = true;
 
-//       try {
-//         await api.post("/auth/refresh", {}, {
-//           _skipAuthRefresh: true,
-//         } as CustomAxiosRequestConfig);
+      try {
+        await api.post("/auth/refresh", {}, {
+          _skipAuthRefresh: true,
+        } as CustomAxiosRequestConfig);
 
-//         return api(originalRequest);
-//       } catch (refreshError) {
-//         return Promise.reject(refreshError);
-//       }
-//     }
+        return api(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+    }
 
-//     return Promise.reject(error);
-//   },
-// );
+    return Promise.reject(error);
+  },
+);
 
 export default api;

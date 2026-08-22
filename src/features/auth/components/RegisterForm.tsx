@@ -18,7 +18,7 @@ import {
   registerFormSchema,
   RegisterFormValues,
 } from "../schema/register.schema";
-import { FormController } from "@/components/Controller";
+import { FormController } from "@/components/shared/Controller";
 import { useRegister } from "../hooks/useRegister";
 import { Loader2 } from "lucide-react";
 import { SocialLoginButtons } from "./SocialLoginButtons";
