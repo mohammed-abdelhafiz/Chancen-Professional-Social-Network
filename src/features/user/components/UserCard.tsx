@@ -9,7 +9,7 @@ import Image from "next/image";
 export const UserCard = () => {
   const user = useAuthStore((s) => s.user);
   return (
-    <Card className="w-64 pt-1 gap-7 h-fit">
+    <Card className="w-full lg:w-64 pt-1 gap-7 h-fit">
       <CardHeader className="px-1">
         <div className="w-full h-28 relative">
           <Image
