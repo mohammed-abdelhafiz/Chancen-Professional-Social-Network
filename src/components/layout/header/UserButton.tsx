@@ -12,6 +12,7 @@ import {
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
+import { getUserInitials } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -24,12 +25,7 @@ export const UserButton = () => {
     logoutMutation.mutate();
   };
 
-  const initials =
-    user?.firstName && user?.lastName
-      ? `${user.firstName[0].toUpperCase()}${user.lastName[0].toUpperCase()}`
-      : user?.firstName
-        ? user.firstName[0].toUpperCase()
-        : "U";
+  const initials = getUserInitials(user);
 
   return (
     <>
