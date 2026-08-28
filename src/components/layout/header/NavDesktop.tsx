@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import {
-  Bell,
   BriefcaseBusiness,
   Home,
   MessageCircleMore,
@@ -16,7 +15,6 @@ const navLinks = [
   { href: "/my-network", label: "My Network", Icon: Users },
   { href: "/jobs", label: "Jobs", Icon: BriefcaseBusiness },
   { href: "/messaging", label: "Messaging", Icon: MessageCircleMore },
-  { href: "/notifications", label: "Notifications", Icon: Bell },
 ];
 
 export const NavDesktop = () => {

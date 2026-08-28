@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const SOCKET_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const user = useAuthStore((s) => s.user);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -16,6 +17,15 @@ export function useSocket() {
     const socket = io(SOCKET_URL, {
       auth: { userId: user.id },
       withCredentials: true,
+      transports: ["websocket", "polling"],
+    });
+
+    socket.on("connect", () => {
+      setIsConnected(true);
+    });
+
+    socket.on("disconnect", () => {
+      setIsConnected(false);
     });
 
     socketRef.current = socket;
@@ -23,6 +33,7 @@ export function useSocket() {
     return () => {
       socket.disconnect();
       socketRef.current = null;
+      setIsConnected(false);
     };
   }, [user?.id]);
 
@@ -35,29 +46,40 @@ export function useSocket() {
   }, []);
 
   const sendMessage = useCallback((conversationId: string, content: string) => {
-    return new Promise((resolve) => {
-      socketRef.current?.emit("sendMessage", { conversationId, content }, (response: any) => {
+    return new Promise<any>((resolve) => {
+      if (!socketRef.current?.connected) {
+        resolve(null);
+        return;
+      }
+      socketRef.current.emit("sendMessage", { conversationId, content }, (response: any) => {
         resolve(response);
       });
     });
   }, []);
 
   const onNewMessage = useCallback((callback: (message: any) => void) => {
-    socketRef.current?.on("newMessage", callback);
+    const socket = socketRef.current;
+    if (!socket) return () => {};
+
+    socket.on("newMessage", callback);
     return () => {
-      socketRef.current?.off("newMessage", callback);
+      socket.off("newMessage", callback);
     };
-  }, []);
+  }, [isConnected]);
 
   const onNotification = useCallback((callback: (notification: any) => void) => {
-    socketRef.current?.on("notification", callback);
+    const socket = socketRef.current;
+    if (!socket) return () => {};
+
+    socket.on("notification", callback);
     return () => {
-      socketRef.current?.off("notification", callback);
+      socket.off("notification", callback);
     };
-  }, []);
+  }, [isConnected]);
 
   return {
     socket: socketRef.current,
+    isConnected,
     joinConversation,
     leaveConversation,
     sendMessage,

@@ -19,7 +19,10 @@ export const ChatWindow = ({ conversationId, onBack }: Props) => {
   const { data, isLoading } = useGetMessages(conversationId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const { joinConversation, leaveConversation, onNewMessage } = useSocket();
+  const { joinConversation, leaveConversation, onNewMessage, socket } = useSocket();
+  const conversationIdRef = useRef(conversationId);
+
+  conversationIdRef.current = conversationId;
 
   useEffect(() => {
     if (data?.messages) {
@@ -35,13 +38,22 @@ export const ChatWindow = ({ conversationId, onBack }: Props) => {
   }, [conversationId, joinConversation, leaveConversation]);
 
   useEffect(() => {
-    const cleanup = onNewMessage((message: Message) => {
-      if (message.conversationId === conversationId) {
-        setMessages((prev) => [...prev, message]);
+    if (!socket) return;
+
+    const handler = (message: Message) => {
+      if (message.conversationId === conversationIdRef.current) {
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
       }
-    });
-    return cleanup;
-  }, [conversationId, onNewMessage]);
+    };
+
+    socket.on("newMessage", handler);
+    return () => {
+      socket.off("newMessage", handler);
+    };
+  }, [socket]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
