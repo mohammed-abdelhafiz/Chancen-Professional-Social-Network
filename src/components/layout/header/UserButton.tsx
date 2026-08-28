@@ -31,10 +31,12 @@ export const UserButton = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <Avatar>
-            <AvatarImage src={user?.avatar?.secure_url} />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
+          <Link href={`/profile/${user?.id}`}>
+            <Avatar>
+              <AvatarImage src={user?.avatar?.secure_url} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </Link>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuGroup>
