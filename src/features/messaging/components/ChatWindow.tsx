@@ -4,9 +4,11 @@ import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useGetMessages } from "../hooks/useGetMessages";
 import { MessageBubble } from "./MessageBubble";
 import { MessageInput } from "./MessageInput";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSocket } from "@/lib/useSocket";
+import { Message } from "../types/messaging";
 
 interface Props {
   conversationId: string;
@@ -16,10 +18,34 @@ interface Props {
 export const ChatWindow = ({ conversationId, onBack }: Props) => {
   const { data, isLoading } = useGetMessages(conversationId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const { joinConversation, leaveConversation, onNewMessage } = useSocket();
+
+  useEffect(() => {
+    if (data?.messages) {
+      setMessages(data.messages);
+    }
+  }, [data?.messages]);
+
+  useEffect(() => {
+    joinConversation(conversationId);
+    return () => {
+      leaveConversation(conversationId);
+    };
+  }, [conversationId, joinConversation, leaveConversation]);
+
+  useEffect(() => {
+    const cleanup = onNewMessage((message: Message) => {
+      if (message.conversationId === conversationId) {
+        setMessages((prev) => [...prev, message]);
+      }
+    });
+    return cleanup;
+  }, [conversationId, onNewMessage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [data?.messages]);
+  }, [messages]);
 
   if (isLoading) {
     return (
@@ -29,7 +55,7 @@ export const ChatWindow = ({ conversationId, onBack }: Props) => {
     );
   }
 
-  const messages = data?.messages || [];
+  const firstSender = messages.length > 0 ? messages[0].sender : null;
 
   return (
     <div className="flex-1 flex flex-col h-full">
@@ -37,12 +63,12 @@ export const ChatWindow = ({ conversationId, onBack }: Props) => {
         <Button variant="ghost" size="icon-sm" onClick={onBack} className="lg:hidden">
           <ArrowLeftIcon className="size-4" />
         </Button>
-        {messages.length > 0 && (
+        {firstSender && (
           <>
-            <UserAvatar user={messages[0].sender} size="sm" href={`/profile/${messages[0].sender.id}`} />
+            <UserAvatar user={firstSender} size="sm" href={`/profile/${firstSender.id}`} />
             <div>
               <p className="font-semibold text-sm">
-                {messages[0].sender.firstName} {messages[0].sender.lastName}
+                {firstSender.firstName} {firstSender.lastName}
               </p>
             </div>
           </>

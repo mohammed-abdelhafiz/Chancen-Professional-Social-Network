@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { useState } from "react";
 import { SendIcon } from "lucide-react";
+import { useSocket } from "@/lib/useSocket";
 
 interface Props {
   conversationId: string;
@@ -13,12 +14,11 @@ interface Props {
 export const MessageInput = ({ conversationId }: Props) => {
   const [content, setContent] = useState("");
   const sendMessageMutation = useSendMessage(conversationId);
+  const { sendMessage } = useSocket();
 
   const handleSend = () => {
     if (!content.trim()) return;
-    sendMessageMutation.mutate(content.trim(), {
-      onSuccess: () => setContent(""),
-    });
+    sendMessage(conversationId, content.trim()).then(() => setContent(""));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -40,7 +40,7 @@ export const MessageInput = ({ conversationId }: Props) => {
       <Button
         size="icon"
         onClick={handleSend}
-        disabled={!content.trim() || sendMessageMutation.isPending}
+        disabled={!content.trim()}
       >
         <SendIcon className="size-4" />
       </Button>
