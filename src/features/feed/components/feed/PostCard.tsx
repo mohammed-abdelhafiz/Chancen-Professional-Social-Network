@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import Link from "next/link";
+import { BookmarkButton } from "@/features/bookmarks/components/BookmarkButton";
+import { RepostButton } from "@/features/reposts/components/RepostButton";
 
 interface Props {
   post: Post;
@@ -179,15 +181,7 @@ export const PostCard = ({ post }: Props) => {
             <MessageCircle className="size-4" />
             <span className="hidden sm:inline text-xs font-medium">Comment</span>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-1 gap-2 text-muted-foreground hover:text-foreground"
-            onClick={handleRepost}
-          >
-            <Repeat2 className="size-4" />
-            <span className="hidden sm:inline text-xs font-medium">Repost</span>
-          </Button>
+          <RepostButton postId={post.id} />
           <Button
             variant="ghost"
             size="sm"
@@ -197,6 +191,7 @@ export const PostCard = ({ post }: Props) => {
             <Send className="size-4" />
             <span className="hidden sm:inline text-xs font-medium">Send</span>
           </Button>
+          <BookmarkButton postId={post.id} />
         </div>
       </div>
 
