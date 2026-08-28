@@ -1,10 +1,13 @@
 import React from "react";
 import { NewPost } from "./NewPost";
+import { Posts } from "./Posts";
 
 export const Feed = () => {
   return (
-    <div className="flex-1">
+    <main className="flex-1 w-full max-w-2xl min-w-0 flex flex-col gap-4">
       <NewPost />
-    </div>
+      <Posts />
+    </main>
   );
 };
+
