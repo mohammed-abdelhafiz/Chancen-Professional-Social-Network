@@ -10,6 +10,7 @@ export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const user = useAuthStore((s) => s.user);
   const [isConnected, setIsConnected] = useState(false);
+  const joinedRoomsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user?.id) return;
@@ -22,6 +23,9 @@ export function useSocket() {
 
     socket.on("connect", () => {
       setIsConnected(true);
+      for (const room of joinedRoomsRef.current) {
+        socket.emit("joinConversation", room);
+      }
     });
 
     socket.on("disconnect", () => {
@@ -31,6 +35,7 @@ export function useSocket() {
     socketRef.current = socket;
 
     return () => {
+      joinedRoomsRef.current.clear();
       socket.disconnect();
       socketRef.current = null;
       setIsConnected(false);
@@ -38,11 +43,17 @@ export function useSocket() {
   }, [user?.id]);
 
   const joinConversation = useCallback((conversationId: string) => {
-    socketRef.current?.emit("joinConversation", conversationId);
+    joinedRoomsRef.current.add(conversationId);
+    if (socketRef.current?.connected) {
+      socketRef.current.emit("joinConversation", conversationId);
+    }
   }, []);
 
   const leaveConversation = useCallback((conversationId: string) => {
-    socketRef.current?.emit("leaveConversation", conversationId);
+    joinedRoomsRef.current.delete(conversationId);
+    if (socketRef.current?.connected) {
+      socketRef.current.emit("leaveConversation", conversationId);
+    }
   }, []);
 
   const sendMessage = useCallback((conversationId: string, content: string) => {
