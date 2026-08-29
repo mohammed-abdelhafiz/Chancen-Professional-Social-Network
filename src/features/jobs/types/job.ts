@@ -33,6 +33,17 @@ export interface JobApplication {
   user: Pick<User, "id" | "firstName" | "lastName" | "avatar" | "headline" | "email">;
 }
 
+export interface MyApplication {
+  id: string;
+  coverLetter?: string | null;
+  status: ApplicationStatus;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  jobId: string;
+  job: Pick<Job, "id" | "title" | "company" | "location" | "type" | "status">;
+}
+
 export interface GetJobsResponse {
   jobs: Job[];
   meta: {

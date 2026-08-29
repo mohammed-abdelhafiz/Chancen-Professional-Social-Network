@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { SearchIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { JobType } from "../types/job";
+import { motion } from "framer-motion";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 
 const jobTypes: { value: string; label: string }[] = [
   { value: "", label: "All" },
@@ -96,17 +97,36 @@ export const JobList = ({ showFilters = true }: Props) => {
       {isLoading ? (
         <JobsSkeleton />
       ) : jobs.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-center py-12 text-muted-foreground"
+        >
           <p className="text-sm">No jobs found</p>
-        </div>
+        </motion.div>
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">{totalJobs} jobs found</p>
-          <div className="space-y-3">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-sm text-muted-foreground"
+          >
+            {totalJobs} jobs found
+          </motion.p>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="space-y-3"
+          >
             {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <motion.div key={job.id} variants={staggerItem}>
+                <JobCard job={job} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
           {hasNextPage && (
             <div className="flex justify-center pt-4">
               <Button

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { Job } from "../types/job";
 import { MapPinIcon, ClockIcon, UsersIcon, BuildingIcon, TrashIcon, ExternalLinkIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useDeleteJob } from "../hooks/useDeleteJob";
 import { useAuthStore } from "@/features/auth/store/auth.store";
@@ -42,7 +43,8 @@ export const JobCard = ({ job, showActions = false }: Props) => {
   const isOwner = currentUser?.id === job.userId;
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: "easeOut" as const }}>
+      <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -111,6 +113,7 @@ export const JobCard = ({ job, showActions = false }: Props) => {
           </span>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </motion.div>
   );
 };

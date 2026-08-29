@@ -6,12 +6,15 @@ import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useGetJob } from "../hooks/useGetJob";
 import { useApplyToJob } from "../hooks/useApplyToJob";
 import { useGetMyApplications } from "../hooks/useGetMyApplications";
+import { useGetJobApplications } from "../hooks/useGetJobApplications";
+import { useUpdateApplicationStatus } from "../hooks/useUpdateApplicationStatus";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { MapPinIcon, ClockIcon, UsersIcon, BuildingIcon, BanknoteIcon, CheckIcon } from "lucide-react";
+import { MapPinIcon, ClockIcon, UsersIcon, BuildingIcon, BanknoteIcon, CheckIcon, XIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { JobsSkeleton } from "./JobsSkeleton";
+import { MyApplication, JobApplication } from "../types/job";
 
 interface Props {
   jobId: string;
@@ -40,6 +43,9 @@ export const JobDetail = ({ jobId }: Props) => {
   const currentUser = useAuthStore((s) => s.user);
   const [coverLetter, setCoverLetter] = useState("");
   const [showApplyForm, setShowApplyForm] = useState(false);
+  const isOwner = currentUser?.id === job?.userId;
+  const { data: applications } = useGetJobApplications(jobId, !!isOwner);
+  const updateStatus = useUpdateApplicationStatus();
 
   if (isLoading) {
     return (
@@ -59,8 +65,7 @@ export const JobDetail = ({ jobId }: Props) => {
     );
   }
 
-  const isOwner = currentUser?.id === job.userId;
-  const isApplied = myApplications?.some((app: any) => app.jobId === job.id);
+  const isApplied = myApplications?.some((app: MyApplication) => app.jobId === job?.id);
 
   const handleApply = () => {
     applyMutation.mutate(
@@ -181,6 +186,77 @@ export const JobDetail = ({ jobId }: Props) => {
               <Link href="/sign-in">
                 <Button>Sign in to apply</Button>
               </Link>
+            </div>
+          )}
+
+          {isOwner && (
+            <div className="border-t pt-6 mt-6">
+              <h3 className="font-semibold text-base mb-4 flex items-center gap-2">
+                <MailIcon className="size-4" /> Applications ({applications?.length ?? 0})
+              </h3>
+              {!applications || applications.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No applications yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {applications.map((app: JobApplication) => (
+                    <div key={app.id} className="border rounded-lg p-4 flex items-start justify-between gap-3 bg-muted/20">
+                      <div className="flex gap-3 flex-1 min-w-0">
+                        <Link href={`/profile/${app.user.id}`}>
+                          <UserAvatar user={app.user} size="default" />
+                        </Link>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm">
+                            {app.user.firstName} {app.user.lastName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{app.user.email}</p>
+                          {app.coverLetter && (
+                            <p className="text-sm mt-2 whitespace-pre-wrap bg-background p-2 rounded border">{app.coverLetter}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-1">Applied {new Date(app.createdAt).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 shrink-0">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium text-center ${
+                            app.status === "accepted"
+                              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                              : app.status === "rejected"
+                                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                          }`}
+                        >
+                          {app.status}
+                        </span>
+                        {app.status === "pending" && (
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                updateStatus.mutate({ jobId: job.id, applicationId: app.id, status: "accepted" })
+                              }
+                              disabled={updateStatus.isPending}
+                              className="h-7 px-2 text-xs"
+                            >
+                              <CheckIcon className="size-3 mr-1" /> Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                updateStatus.mutate({ jobId: job.id, applicationId: app.id, status: "rejected" })
+                              }
+                              disabled={updateStatus.isPending}
+                              className="h-7 px-2 text-xs"
+                            >
+                              <XIcon className="size-3 mr-1" /> Reject
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </CardContent>

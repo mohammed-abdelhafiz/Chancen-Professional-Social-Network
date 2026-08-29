@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { CreateJobInput, GetJobsResponse, Job, JobApplication } from "../types/job";
+import { CreateJobInput, GetJobsResponse, Job, JobApplication, MyApplication } from "../types/job";
 
 export const getJobs = async (
   page = 1,
@@ -51,7 +51,16 @@ export const getMyJobs = async (): Promise<Job[]> => {
   return res.data;
 };
 
-export const getMyApplications = async (): Promise<any[]> => {
+export const getMyApplications = async (): Promise<MyApplication[]> => {
   const res = await api.get("/jobs/my-applications");
+  return res.data;
+};
+
+export const updateApplicationStatus = async (
+  jobId: string,
+  applicationId: string,
+  status: "pending" | "accepted" | "rejected",
+) => {
+  const res = await api.patch(`/jobs/${jobId}/applications/${applicationId}`, { status });
   return res.data;
 };
