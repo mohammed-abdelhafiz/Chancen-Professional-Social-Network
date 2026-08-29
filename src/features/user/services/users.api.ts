@@ -6,6 +6,25 @@ export const getUser = async (id: string): Promise<User> => {
   return res.data;
 };
 
+export const updateProfile = async (formData: FormData): Promise<User> => {
+  const res = await api.patch("/users/me", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+export const getUserPosts = async (userId: string, page = 1, limit = 10) => {
+  const res = await api.get(`/posts/user/${userId}`, {
+    params: { page, limit },
+  });
+  return res.data;
+};
+
+export const getUserStats = async (userId: string) => {
+  const res = await api.get(`/users/${userId}/stats`);
+  return res.data as { followersCount: number; followingCount: number; connectionsCount: number };
+};
+
 export const getFollowSuggestions = async () => {
   const res = await api.get("/users/follow-suggestions");
   return res.data;

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -14,18 +14,13 @@ function getImageUrl(obj: { url?: string; secure_url?: string } | null | undefin
 
 export const UserCard = () => {
   const user = useAuthStore((s) => s.user);
-  const coverUrl = getImageUrl(user?.coverPhoto as { url?: string; secure_url?: string }) || "/placeholder-cover-photo.avif";
+  const coverUrl = getImageUrl(user?.coverPhoto as { url?: string; secure_url?: string });
   const avatarUrl = getImageUrl(user?.avatar as { url?: string; secure_url?: string });
   return (
     <Card className="w-full lg:w-64 xl:w-72 shrink-0 p-0 overflow-hidden h-fit lg:sticky lg:top-6">
       <CardHeader className="p-0 border-0">
         <div className="w-full h-24 relative bg-muted">
-          <Image
-            src={coverUrl}
-            fill
-            alt="cover photo"
-            className="object-cover"
-          />
+          {coverUrl && <Image src={coverUrl} fill alt="cover photo" className="object-cover" />}
           <Link href={`/profile/${user?.id}`} className="absolute -bottom-6 left-4">
             <Avatar className="ring-4 ring-card" size="lg">
               <AvatarImage src={avatarUrl} />
