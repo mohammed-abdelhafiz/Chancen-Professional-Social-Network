@@ -16,6 +16,8 @@ export const ConnectionRequestCard = ({ request }: Props) => {
   const acceptMutation = useAcceptRequest();
   const rejectMutation = useRejectRequest();
 
+  if (!request?.sender || !request.sender.id) return null;
+
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
       <Link href={`/profile/${request.sender.id}`}>

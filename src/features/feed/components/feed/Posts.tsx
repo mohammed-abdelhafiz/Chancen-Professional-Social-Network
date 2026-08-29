@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { Loader2, FileText, AlertCircle } from "lucide-react";
 import { useGetPosts } from "../../hooks/useGetPosts";
 import { useEffect, useRef } from "react";
@@ -6,6 +6,8 @@ import { PostCard } from "./PostCard";
 import { PostsSkeleton } from "./PostsSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 
 export const Posts = () => {
   const { data, fetchNextPage, isFetchingNextPage, isLoading, hasNextPage, isError, error, refetch } =
@@ -73,9 +75,16 @@ export const Posts = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <motion.div
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col gap-4 w-full"
+    >
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <motion.div key={post.feedItemId ?? post.id} variants={staggerItem}>
+          <PostCard post={post} />
+        </motion.div>
       ))}
       <div ref={loadMoreRef} className="flex flex-col items-center justify-center py-4 gap-2">
         {isFetchingNextPage && (
@@ -85,6 +94,6 @@ export const Posts = () => {
           <p className="text-xs text-muted-foreground">You have reached the end of the feed</p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

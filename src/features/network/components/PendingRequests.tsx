@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetConnectionRequests } from "../hooks/useGetConnectionRequests";
 import { ConnectionRequestCard } from "./ConnectionRequestCard";
 import { UsersIcon } from "lucide-react";
+import { ConnectionRequest } from "../types/network";
 
 export const PendingRequests = () => {
   const { data: requests, isLoading } = useGetConnectionRequests();
@@ -51,7 +52,7 @@ export const PendingRequests = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {requests.map((request: any) => (
+          {requests.map((request: ConnectionRequest) => (
             <ConnectionRequestCard key={request.senderId} request={request} />
           ))}
         </div>

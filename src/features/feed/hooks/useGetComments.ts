@@ -1,4 +1,4 @@
-﻿import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getComments } from "../services/feed.api";
 
 export const useGetComments = (postId: string, enabled = true) => {

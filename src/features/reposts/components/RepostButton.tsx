@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Repeat2Icon } from "lucide-react";
 import { useCreateRepost } from "../hooks/useCreateRepost";
+import { useDeleteRepost } from "../hooks/useDeleteRepost";
 import { useHasReposted } from "../hooks/useHasReposted";
 import { cn } from "@/lib/utils";
 import {
@@ -24,12 +25,17 @@ interface Props {
 export const RepostButton = ({ postId, size = "sm" }: Props) => {
   const { data } = useHasReposted(postId);
   const createRepost = useCreateRepost();
+  const deleteRepost = useDeleteRepost();
   const [content, setContent] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const hasReposted = data?.reposted || false;
 
   const handleRepost = () => {
+    if (hasReposted) {
+      deleteRepost.mutate(postId);
+      return;
+    }
     createRepost.mutate(
       { postId, content: content.trim() || undefined },
       {
@@ -41,6 +47,28 @@ export const RepostButton = ({ postId, size = "sm" }: Props) => {
     );
   };
 
+  const handleTriggerClick = (e: React.MouseEvent) => {
+    if (hasReposted) {
+      e.preventDefault();
+      deleteRepost.mutate(postId);
+    }
+  };
+
+  if (hasReposted) {
+    return (
+      <Button
+        variant="ghost"
+        size={size}
+        onClick={() => deleteRepost.mutate(postId)}
+        disabled={deleteRepost.isPending}
+        className={cn("flex-1 gap-2 text-green-600 hover:text-green-700")}
+      >
+        <Repeat2Icon className="size-4" />
+        <span className="hidden sm:inline text-xs font-medium">Reposted</span>
+      </Button>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger
@@ -48,17 +76,12 @@ export const RepostButton = ({ postId, size = "sm" }: Props) => {
           <Button
             variant="ghost"
             size={size}
-            className={cn(
-              "flex-1 gap-2 text-muted-foreground hover:text-foreground",
-              hasReposted && "text-green-600"
-            )}
+            className="flex-1 gap-2 text-muted-foreground hover:text-foreground"
           />
         }
       >
         <Repeat2Icon className="size-4" />
-        <span className="hidden sm:inline text-xs font-medium">
-          {hasReposted ? "Reposted" : "Repost"}
-        </span>
+        <span className="hidden sm:inline text-xs font-medium">Repost</span>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -71,11 +94,7 @@ export const RepostButton = ({ postId, size = "sm" }: Props) => {
           className="min-h-[100px]"
         />
         <div className="flex justify-end gap-2">
-          <DialogClose
-            render={<Button variant="outline" />}
-          >
-            Cancel
-          </DialogClose>
+          <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
           <Button onClick={handleRepost} disabled={createRepost.isPending}>
             {createRepost.isPending ? "Posting..." : "Repost"}
           </Button>

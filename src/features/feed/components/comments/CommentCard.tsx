@@ -1,4 +1,4 @@
-﻿import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Comment } from "../../types/post";
 import { getUserInitials } from "@/lib/utils";
@@ -94,7 +94,7 @@ export const CommentCard = ({ comment, postId }: Props) => {
           {imageUrl && (
             <div className="mt-2 rounded-xl overflow-hidden border bg-background">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imageUrl} alt="comment image" className="w-full h-auto max-h-[250px] object-contain" />
+              <img src={imageUrl} alt="comment image" loading="lazy" className="w-full h-auto max-h-[250px] object-contain" />
             </div>
           )}
         </div>

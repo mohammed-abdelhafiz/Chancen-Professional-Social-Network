@@ -1,4 +1,4 @@
-﻿import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikePost } from "../services/feed.api";
 import { GetPostsResponse } from "../services/feed.api";
 import { toast } from "sonner";

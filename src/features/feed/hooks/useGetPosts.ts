@@ -1,4 +1,4 @@
-﻿import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getPosts, GetPostsResponse } from "../services/feed.api";
 
 export const useGetPosts = () => {

@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const BookmarkButton = ({ postId, size = "icon-sm" }: Props) => {
-  const { data, isLoading } = useIsBookmarked(postId);
+  const { data } = useIsBookmarked(postId);
   const toggleBookmark = useToggleBookmark();
 
   const isBookmarked = data?.bookmarked || false;

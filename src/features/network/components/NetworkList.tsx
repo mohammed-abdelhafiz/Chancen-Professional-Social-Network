@@ -8,6 +8,10 @@ import { NetworkUserCard } from "./NetworkUserCard";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { LinkIcon, UsersIcon, UserCheckIcon } from "lucide-react";
+import { Connection, Follow, Following } from "../types/network";
+import { User } from "@/features/auth/types/user";
+
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 type Tab = "connections" | "followers" | "following";
 
@@ -19,20 +23,35 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 
 export const NetworkList = () => {
   const [activeTab, setActiveTab] = useState<Tab>("connections");
+  const currentUserId = useAuthStore((s) => s.user?.id);
   const { data: connections, isLoading: loadingConnections } = useGetConnections();
   const { data: followers, isLoading: loadingFollowers } = useGetFollowers();
   const { data: following, isLoading: loadingFollowing } = useGetFollowing();
 
-  const followingIds = new Set(following?.map((f: any) => f.followingId) || []);
+  const followingIds = new Set(following?.map((f: Following) => f.followingId) || []);
 
-  const getList = () => {
+  const getList = (): User[] => {
     switch (activeTab) {
       case "connections":
-        return connections?.map((c: any) => c.sender) || [];
+        return (
+          connections
+            ?.map((c: Connection) => (c.senderId === currentUserId ? c.receiver : c.sender))
+            .filter((u): u is User => Boolean(u && u.id)) || []
+        );
       case "followers":
-        return followers?.map((f: any) => f.follower) || [];
+        return (
+          followers
+            ?.map((f: Follow) => f.follower)
+            .filter((u): u is User => Boolean(u && u.id)) || []
+        );
       case "following":
-        return following?.map((f: any) => f.following) || [];
+        return (
+          following
+            ?.map((f: Following) => f.following)
+            .filter((u): u is User => Boolean(u && u.id)) || []
+        );
+      default:
+        return [];
     }
   };
 
@@ -98,7 +117,7 @@ export const NetworkList = () => {
           </div>
         ) : (
           <div className="space-y-1">
-            {list.map((user: any) => (
+            {list.map((user: User) => (
               <NetworkUserCard
                 key={user.id}
                 user={user}

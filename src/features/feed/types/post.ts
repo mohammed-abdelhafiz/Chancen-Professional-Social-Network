@@ -1,4 +1,4 @@
-﻿export interface Post {
+export interface Post {
   id: string;
   content?: string | null;
   image?: {
@@ -9,6 +9,23 @@
   createdAt: string;
   updatedAt: string;
   userId: string;
+  feedItemId?: string;
+  feedCreatedAt?: string;
+  repost?: {
+    id: string;
+    content?: string | null;
+    createdAt: string;
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      avatar?: {
+        url?: string;
+        secure_url?: string;
+      } | null;
+      headline?: string | null;
+    };
+  };
   isLiked?: boolean;
   user: {
     id: string;

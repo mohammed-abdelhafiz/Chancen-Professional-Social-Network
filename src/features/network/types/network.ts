@@ -7,6 +7,7 @@ export interface Connection {
   createdAt: string;
   updatedAt: string;
   sender: User;
+  receiver?: User;
 }
 
 export interface ConnectionRequest {

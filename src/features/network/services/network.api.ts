@@ -15,6 +15,13 @@ export const connectUser = async (userId: string) => {
   return res.data;
 };
 
+export const getConnectionStatus = async (
+  userId: string,
+): Promise<{ status: "self" | "none" | "connected" | "pending_sent" | "pending_received" }> => {
+  const res = await api.get(`/users/${userId}/connection-status`);
+  return res.data;
+};
+
 export const getConnectionRequests = async (userId: string) => {
   const res = await api.get(`/users/${userId}/connectionRequests`);
   return res.data;

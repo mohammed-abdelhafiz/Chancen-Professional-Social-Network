@@ -1,4 +1,4 @@
-﻿import api from "@/lib/axios";
+import api from "@/lib/axios";
 import { Post, GetCommentsResponse } from "../types/post";
 
 export interface GetPostsResponse {
@@ -17,6 +17,11 @@ export const createPost = async (formData: FormData) => {
 
 export const getPosts = async (page: number): Promise<GetPostsResponse> => {
   const response = await api.get(`/posts?page=${page}&limit=10`);
+  return response.data;
+};
+
+export const getPost = async (postId: string): Promise<Post> => {
+  const response = await api.get(`/posts/${postId}`);
   return response.data;
 };
 

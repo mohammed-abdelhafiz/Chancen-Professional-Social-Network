@@ -3,9 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useFollowUser } from "../hooks/useFollowUser";
-import { useConnectUser } from "../hooks/useConnectUser";
 import { User } from "@/features/auth/types/user";
-import { CheckIcon, UserPlusIcon, UsersIcon } from "lucide-react";
+import { CheckIcon, UserPlusIcon } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
@@ -16,7 +15,8 @@ interface Props {
 
 export const NetworkUserCard = ({ user, type, isFollowing = false }: Props) => {
   const followMutation = useFollowUser();
-  const connectMutation = useConnectUser();
+
+  if (!user || !user.id) return null;
 
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">

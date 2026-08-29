@@ -19,15 +19,21 @@ export const ChatWindow = ({ conversationId, onBack }: Props) => {
   const { data, isLoading } = useGetMessages(conversationId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const { joinConversation, leaveConversation, onNewMessage, socket } = useSocket();
+  const { joinConversation, leaveConversation, socket } = useSocket();
   const conversationIdRef = useRef(conversationId);
 
-  conversationIdRef.current = conversationId;
+  // Keep ref in sync inside an effect, not during render
+  useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
 
+  // Initialise messages from query data without a derived-state effect:
+  // use the query result directly as initial state and append only socket messages
   useEffect(() => {
     if (data?.messages) {
       setMessages(data.messages);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.messages]);
 
   useEffect(() => {
