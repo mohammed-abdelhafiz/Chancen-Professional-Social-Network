@@ -10,6 +10,7 @@ export interface Notification {
   id: string;
   type: NotificationType;
   content: string | null;
+  link: string | null;
   read: boolean;
   createdAt: string;
   updatedAt: string;
@@ -24,7 +25,8 @@ export type NotificationType =
   | 'follow'
   | 'connection_request'
   | 'connection_accepted'
-  | 'message';
+  | 'message'
+  | 'job_application';
 
 export interface NotificationsResponse {
   notifications: Notification[];

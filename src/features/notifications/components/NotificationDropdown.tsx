@@ -35,19 +35,20 @@ export const NotificationDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <Button
-        variant="ghost"
-        size="icon"
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative"
+        className="relative flex flex-col items-center hover:text-primary transition-colors"
       >
-        <BellIcon className="size-5" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 size-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
-      </Button>
+        <div className="relative">
+          <BellIcon className="size-5" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 size-4 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center font-medium leading-none">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
+        </div>
+        <span className="text-sm">Notifications</span>
+      </button>
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-background border rounded-lg shadow-lg z-50 overflow-hidden">

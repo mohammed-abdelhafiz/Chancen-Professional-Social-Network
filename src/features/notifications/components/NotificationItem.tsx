@@ -2,15 +2,15 @@
 
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { Notification } from "../types/notification";
-import Link from "next/link";
 import { useMarkAsRead } from "../hooks/useMarkAsRead";
+import { useRouter } from "next/navigation";
 import {
   Heart,
   MessageCircle,
   UserPlus,
   UserCheck,
   Bell,
-  Briefcase,
+  BriefcaseBusiness,
 } from "lucide-react";
 
 interface Props {
@@ -40,6 +40,7 @@ const iconMap: Record<string, typeof Heart> = {
   connection_request: Bell,
   connection_accepted: UserCheck,
   message: MessageCircle,
+  job_application: BriefcaseBusiness,
 };
 
 const colorMap: Record<string, string> = {
@@ -49,16 +50,23 @@ const colorMap: Record<string, string> = {
   connection_request: "text-amber-500",
   connection_accepted: "text-green-500",
   message: "text-blue-500",
+  job_application: "text-violet-500",
 };
 
 export const NotificationItem = ({ notification }: Props) => {
   const markAsRead = useMarkAsRead();
+  const router = useRouter();
   const Icon = iconMap[notification.type] || Bell;
   const iconColor = colorMap[notification.type] || "text-muted-foreground";
 
   const handleClick = () => {
     if (!notification.read) {
       markAsRead.mutate(notification.id);
+    }
+    if (notification.link) {
+      router.push(notification.link);
+    } else if (notification.sender) {
+      router.push(`/profile/${notification.sender.id}`);
     }
   };
 
