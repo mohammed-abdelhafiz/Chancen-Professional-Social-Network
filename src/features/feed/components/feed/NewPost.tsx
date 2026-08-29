@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,7 +52,7 @@ export const NewPost = () => {
 
   return (
     <>
-      <Card className="p-3 sticky top-4 z-10 shadow-sm">
+      <Card className="p-3 shadow-sm">
         <CardContent className="p-0">
           <div className="flex flex-row items-center gap-2">
             <UserAvatar user={user} size="default" />
