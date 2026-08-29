@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getUserInitials } from "@/lib/utils";
 import { User } from "@/features/auth/types/user";

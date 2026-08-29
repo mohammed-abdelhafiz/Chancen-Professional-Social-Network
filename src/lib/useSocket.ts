@@ -4,40 +4,47 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 
-const SOCKET_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+const SOCKET_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
+).replace(/\/api\/?$/, "");
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const user = useAuthStore((s) => s.user);
   const [isConnected, setIsConnected] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const joinedRoomsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user?.id) return;
 
-    const socket = io(SOCKET_URL, {
+    const newSocket = io(SOCKET_URL, {
       auth: { userId: user.id },
       withCredentials: true,
       transports: ["websocket", "polling"],
     });
 
-    socket.on("connect", () => {
+    newSocket.on("connect", () => {
       setIsConnected(true);
-      for (const room of joinedRoomsRef.current) {
-        socket.emit("joinConversation", room);
+      const rooms = joinedRoomsRef.current;
+      for (const room of rooms) {
+        newSocket.emit("joinConversation", room);
       }
     });
 
-    socket.on("disconnect", () => {
+    newSocket.on("disconnect", () => {
       setIsConnected(false);
     });
 
-    socketRef.current = socket;
+    socketRef.current = newSocket;
+    setSocket(newSocket);
 
     return () => {
-      joinedRoomsRef.current.clear();
-      socket.disconnect();
+      const rooms = joinedRoomsRef.current;
+      rooms.clear();
+      newSocket.disconnect();
       socketRef.current = null;
+      setSocket(null);
       setIsConnected(false);
     };
   }, [user?.id]);
@@ -56,40 +63,53 @@ export function useSocket() {
     }
   }, []);
 
-  const sendMessage = useCallback((conversationId: string, content: string) => {
-    return new Promise<any>((resolve) => {
-      if (!socketRef.current?.connected) {
-        resolve(null);
-        return;
-      }
-      socketRef.current.emit("sendMessage", { conversationId, content }, (response: any) => {
-        resolve(response);
+  const sendMessage = useCallback(
+    (conversationId: string, content: string) => {
+      return new Promise<{ id: string; content: string } | null>((resolve) => {
+        if (!socketRef.current?.connected) {
+          resolve(null);
+          return;
+        }
+        socketRef.current.emit(
+          "sendMessage",
+          { conversationId, content },
+          (response: { id: string; content: string } | null) => {
+            resolve(response);
+          },
+        );
       });
-    });
-  }, []);
+    },
+    [],
+  );
 
-  const onNewMessage = useCallback((callback: (message: any) => void) => {
-    const socket = socketRef.current;
-    if (!socket) return () => {};
+  const onNewMessage = useCallback(
+    (callback: (message: Record<string, unknown>) => void) => {
+      const sock = socketRef.current;
+      if (!sock) return () => {};
 
-    socket.on("newMessage", callback);
-    return () => {
-      socket.off("newMessage", callback);
-    };
-  }, [isConnected]);
+      sock.on("newMessage", callback);
+      return () => {
+        sock.off("newMessage", callback);
+      };
+    },
+    [],
+  );
 
-  const onNotification = useCallback((callback: (notification: any) => void) => {
-    const socket = socketRef.current;
-    if (!socket) return () => {};
+  const onNotification = useCallback(
+    (callback: (notification: Record<string, unknown>) => void) => {
+      const sock = socketRef.current;
+      if (!sock) return () => {};
 
-    socket.on("notification", callback);
-    return () => {
-      socket.off("notification", callback);
-    };
-  }, [isConnected]);
+      sock.on("notification", callback);
+      return () => {
+        sock.off("notification", callback);
+      };
+    },
+    [],
+  );
 
   return {
-    socket: socketRef.current,
+    socket,
     isConnected,
     joinConversation,
     leaveConversation,
