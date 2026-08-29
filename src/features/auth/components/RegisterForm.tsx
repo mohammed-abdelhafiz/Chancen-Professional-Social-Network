@@ -22,6 +22,7 @@ import { FormController } from "@/components/shared/Controller";
 import { useRegister } from "../hooks/useRegister";
 import { Loader2 } from "lucide-react";
 import { SocialLoginButtons } from "./SocialLoginButtons";
+import { motion } from "framer-motion";
 
 export const RegisterForm = () => {
   const form = useForm<RegisterFormValues>({
@@ -41,7 +42,13 @@ export const RegisterForm = () => {
   }
 
   return (
-    <Card className="w-full sm:max-w-md">
+    <motion.div
+      initial={{ opacity: 0, y: 16, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const }}
+      className="w-full max-w-md"
+    >
+      <Card className="w-full">
       <CardHeader className="text-center">
         <CardTitle>Create your account</CardTitle>
         <CardDescription>
@@ -115,6 +122,7 @@ export const RegisterForm = () => {
           </p>
         </Field>
       </CardFooter>
-    </Card>
+      </Card>
+    </motion.div>
   );
 };

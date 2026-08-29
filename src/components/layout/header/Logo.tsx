@@ -1,3 +1,12 @@
+import Link from "next/link";
+
 export const Logo = () => {
-  return <div className="text-2xl font-bold text-primary">Chancen</div>;
+  return (
+    <Link
+      href="/"
+      className="text-2xl font-bold text-primary hover:opacity-90 transition-opacity inline-flex items-center"
+    >
+      Chancen
+    </Link>
+  );
 };
