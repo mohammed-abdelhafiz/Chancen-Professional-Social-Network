@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { SearchIcon, XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useSearch } from "../hooks/useSearch";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { SearchIcon, XIcon, ArrowRight, Sparkles } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/UserAvatar";
+import { useSearch } from "../hooks/useSearch";
 
 export const SearchBar = () => {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const { data, isLoading } = useSearch(query);
 
   useEffect(() => {
@@ -45,6 +48,20 @@ export const SearchBar = () => {
     inputRef.current?.focus();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && query.trim().length > 0) {
+      setIsOpen(false);
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
+
+  const handleSeeAll = () => {
+    if (query.trim().length > 0) {
+      setIsOpen(false);
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
+
   const hasResults =
     data &&
     (data.users.length > 0 || data.posts.length > 0 || data.jobs.length > 0);
@@ -55,10 +72,11 @@ export const SearchBar = () => {
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input
           ref={inputRef}
-          placeholder="Search users, posts, jobs..."
+          placeholder="Search users, posts, jobs... (Press Enter)"
           value={query}
           onChange={handleChange}
           onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
           className="pl-9 pr-9"
         />
         {query && (
@@ -74,32 +92,33 @@ export const SearchBar = () => {
       </div>
 
       {isOpen && query.trim().length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-lg shadow-lg z-50 overflow-hidden max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border/80 rounded-xl shadow-xl z-50 overflow-hidden max-h-[440px] overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              Searching...
+            <div className="p-4 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+              <Sparkles className="size-4 animate-pulse text-primary" />
+              <span>Searching...</span>
             </div>
           ) : !hasResults ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
-              No results found
+              No results found for &ldquo;{query}&rdquo;
             </div>
           ) : (
             <>
               {data.users.length > 0 && (
                 <div className="p-2">
-                  <p className="text-xs font-medium text-muted-foreground px-2 py-1">
+                  <p className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wider">
                     People
                   </p>
-                  {data.users.map((user) => (
+                  {data.users.slice(0, 3).map((user) => (
                     <Link
                       key={user.id}
                       href={`/profile/${user.id}`}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 p-2 hover:bg-muted rounded-md"
+                      className="flex items-center gap-2.5 p-2 hover:bg-muted/60 rounded-lg transition-colors"
                     >
-                      <UserAvatar user={user} size="sm" />
-                      <div>
-                        <p className="text-sm font-medium">
+                      <UserAvatar user={user as any} size="sm" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">
                           {user.firstName} {user.lastName}
                         </p>
                         {user.headline && (
@@ -114,18 +133,18 @@ export const SearchBar = () => {
               )}
 
               {data.posts.length > 0 && (
-                <div className="p-2 border-t">
-                  <p className="text-xs font-medium text-muted-foreground px-2 py-1">
+                <div className="p-2 border-t border-border/40">
+                  <p className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wider">
                     Posts
                   </p>
-                  {data.posts.map((post) => (
+                  {data.posts.slice(0, 2).map((post) => (
                     <Link
                       key={post.id}
-                      href={`/feed#${post.id}`}
+                      href={`/posts/${post.id}`}
                       onClick={() => setIsOpen(false)}
-                      className="block p-2 hover:bg-muted rounded-md"
+                      className="block p-2 hover:bg-muted/60 rounded-lg transition-colors"
                     >
-                      <p className="text-sm line-clamp-2">{post.content}</p>
+                      <p className="text-sm line-clamp-2 text-foreground/90">{post.content}</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         by {post.user.firstName} {post.user.lastName}
                       </p>
@@ -135,18 +154,18 @@ export const SearchBar = () => {
               )}
 
               {data.jobs.length > 0 && (
-                <div className="p-2 border-t">
-                  <p className="text-xs font-medium text-muted-foreground px-2 py-1">
+                <div className="p-2 border-t border-border/40">
+                  <p className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wider">
                     Jobs
                   </p>
-                  {data.jobs.map((job) => (
+                  {data.jobs.slice(0, 2).map((job) => (
                     <Link
                       key={job.id}
                       href={`/jobs/${job.id}`}
                       onClick={() => setIsOpen(false)}
-                      className="block p-2 hover:bg-muted rounded-md"
+                      className="block p-2 hover:bg-muted/60 rounded-lg transition-colors"
                     >
-                      <p className="text-sm font-medium">{job.title}</p>
+                      <p className="text-sm font-medium text-foreground">{job.title}</p>
                       <p className="text-xs text-muted-foreground">
                         {job.company}
                       </p>
@@ -154,6 +173,16 @@ export const SearchBar = () => {
                   ))}
                 </div>
               )}
+
+              <div className="p-2 bg-muted/40 border-t border-border/60">
+                <button
+                  onClick={handleSeeAll}
+                  className="w-full py-1.5 px-2 text-xs font-semibold text-primary hover:text-primary/80 flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span>See all results for &ldquo;{query}&rdquo;</span>
+                  <ArrowRight className="size-3" />
+                </button>
+              </div>
             </>
           )}
         </div>

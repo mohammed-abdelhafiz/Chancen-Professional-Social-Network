@@ -1,13 +1,10 @@
-import axios from "axios";
+import api from "@/lib/axios";
 import { SearchResults } from "../types/search";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export const searchApi = {
   search: async (query: string): Promise<SearchResults> => {
-    const { data } = await axios.get(`${API_URL}/search`, {
+    const { data } = await api.get(`/search`, {
       params: { q: query },
-      withCredentials: true,
     });
     return data;
   },
