@@ -36,19 +36,19 @@ export const NetworkList = () => {
         return (
           connections
             ?.map((c: Connection) => (c.senderId === currentUserId ? c.receiver : c.sender))
-            .filter((u): u is User => Boolean(u && u.id)) || []
+            .filter((u: User | undefined): u is User => Boolean(u && u.id)) || []
         );
       case "followers":
         return (
           followers
             ?.map((f: Follow) => f.follower)
-            .filter((u): u is User => Boolean(u && u.id)) || []
+            .filter((u: User | undefined): u is User => Boolean(u && u.id)) || []
         );
       case "following":
         return (
           following
             ?.map((f: Following) => f.following)
-            .filter((u): u is User => Boolean(u && u.id)) || []
+            .filter((u: User | undefined): u is User => Boolean(u && u.id)) || []
         );
       default:
         return [];
