@@ -23,7 +23,7 @@ export const InitAuthProvider = ({
       setUser(me);
 
       if (pathname === "/sign-in" || pathname === "/register") {
-        router.replace("/");
+        router.replace("/feed");
       }
     }
   }, [me, pathname, router, setUser]);
