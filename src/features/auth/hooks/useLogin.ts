@@ -14,7 +14,7 @@ export const useLogin = () => {
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response?.data?.message || "Failed to login");
       } else toast.error("Failed to login");
     },
   });

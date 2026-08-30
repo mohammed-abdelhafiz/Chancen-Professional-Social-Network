@@ -15,22 +15,33 @@ api.interceptors.response.use(
 
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomAxiosRequestConfig;
+    const url = originalRequest?.url || "";
+    const isAuthRoute =
+      url.includes("/auth/login") ||
+      url.includes("/auth/register") ||
+      url.includes("/auth/refresh") ||
+      url.includes("/auth/logout");
 
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest._skipAuthRefresh
+      !originalRequest?._retry &&
+      !originalRequest?._skipAuthRefresh &&
+      !isAuthRoute
     ) {
       originalRequest._retry = true;
 
       try {
-        await api.post("/auth/refresh", {}, {
-          _skipAuthRefresh: true,
-        } as CustomAxiosRequestConfig);
+        await api.post(
+          "/auth/refresh",
+          {},
+          {
+            _skipAuthRefresh: true,
+          } as CustomAxiosRequestConfig,
+        );
 
         return api(originalRequest);
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
+      } catch {
+        return Promise.reject(error);
       }
     }
 
